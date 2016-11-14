@@ -7,8 +7,9 @@ from .models import User
 
 @app.route('/')
 @app.route('/index')
+@login_required
 def index():
-    user = {'nickname':'mfrw'}
+    user = g.user
     posts = [
             {
                 'author': {'nickname':'Jhon'},
@@ -64,3 +65,12 @@ def after_login(resp):
         session.pop('remember_me', None)
     login_user(user, remember = remember_me)
     return redirect(request.args.get('next') or url_for('index'))
+
+@app.before_request
+def before_request():
+    g.user = current_user
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
